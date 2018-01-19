@@ -1,0 +1,3 @@
+﻿  main.cpp
+c:\users\bth\documents\github\mayaproject\mayaplugin\main.cpp(20): warning C4715: 'initializePlugin': not all control paths return a value
+  MayaPlugin.vcxproj -> C:\Users\BTH\Documents\GitHub\MayaProject\x64\Debug\MayaPlugin.mll
