@@ -1,4 +1,5 @@
 #include "maya_includes.h"
+#include "info.h"
 
 MCallbackIdArray myCallbackArray;
 
@@ -50,16 +51,59 @@ void nodeCreationCallback(MObject& node, void* clientData)
 
 }
 
+void getTransfromData(MFnTransform& transformer)
+{
+	MMatrix transformationMatrix = transformer.transformation().asMatrix();
+}
+void OutputMeshVerticis(MFnMesh& mesh, meshData& mshData)
+{
+	/*if()
+	mshData.meshName;
+
+	MPointArray vts;
+	mesh.getPoints(vts); 
+	int nrOfVts = vts.length(); 
+
+	for (int i = 0; i < nrOfVts; i++)
+	{
+		vertexData vrtData;
+		vertex tempVert;
+
+		vrtData.vertexID = i;
+		vertexList.push_back(vts);
+
+ 		tempVert.vertexPos[0] = vts[i].x;
+		tempVert.vertexPos[1] = vts[i].y;
+		tempVert.vertexPos[2] = vts[i].z;
+
+		mshData.vertexList.push_back(tempVert);
+	}*/
+}
+
 void attributeChangedCallback(MNodeMessage::AttributeMessage msg, MPlug &plug, MPlug &otherPlug, void*clientData)
 {
-	MStatus res;
-
 	if (msg & MNodeMessage::AttributeMessage::kAttributeSet)
 	{
-		
+		if (plug.node().apiType() == MFn::kTransform)
+		{
+			MFnTransform transform(plug.node()); 
+
+			if (transform.child(0).hasFn(MFn::kMesh))
+			{
+				MFnMesh mesh = transform.child(0);
+				meshData mData;
+				mData.meshName = mesh.absoluteName().asChar();
+
+				getTransfromData(transform);
+				OutputMeshVerticis(mesh, mData);
+
+			}
+		}
 	}
 
 }
+
+
 
 EXPORT MStatus initializePlugin(MObject obj) 
 {

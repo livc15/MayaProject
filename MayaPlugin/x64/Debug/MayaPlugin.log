@@ -1,3 +1,8 @@
 ﻿  main.cpp
-c:\users\bth\documents\github\mayaproject\mayaplugin\main.cpp(20): warning C4715: 'initializePlugin': not all control paths return a value
-  MayaPlugin.vcxproj -> C:\Users\BTH\Documents\GitHub\MayaProject\x64\Debug\MayaPlugin.mll
+d:\leveleditor\github\mayaproject\mayaplugin\main.cpp(35): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\leveleditor\github\mayaproject\mayaplugin\main.cpp(48): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\leveleditor\github\mayaproject\mayaplugin\main.cpp(130): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\leveleditor\github\mayaproject\mayaplugin\main.cpp(141): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\leveleditor\github\mayaproject\mayaplugin\main.cpp(146): warning C4715: 'initializePlugin': not all control paths return a value
+     Creating library D:\LevelEditor\GitHub\MayaProject\x64\Debug\MayaPlugin.lib and object D:\LevelEditor\GitHub\MayaProject\x64\Debug\MayaPlugin.exp
+  MayaPlugin.vcxproj -> D:\LevelEditor\GitHub\MayaProject\x64\Debug\MayaPlugin.mll
