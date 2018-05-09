@@ -1,0 +1,8 @@
+﻿  main.cpp
+d:\grafiktillspel\mayaprojectspring\mayaplugin\main.cpp(328): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\grafiktillspel\mayaprojectspring\mayaplugin\main.cpp(341): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\grafiktillspel\mayaprojectspring\mayaplugin\main.cpp(353): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\grafiktillspel\mayaprojectspring\mayaplugin\main.cpp(380): warning C4390: ';': empty controlled statement found; is this the intent?
+d:\grafiktillspel\mayaprojectspring\mayaplugin\main.cpp(392): warning C4390: ';': empty controlled statement found; is this the intent?
+  MayaPlugin.vcxproj -> D:\GrafikTillSpel\MayaProjectSpring\x64\Debug\MayaPlugin.mll
+  MayaPlugin.vcxproj -> D:\GrafikTillSpel\MayaProjectSpring\x64\Debug\MayaPlugin.pdb (Partial PDB)

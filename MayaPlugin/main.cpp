@@ -41,6 +41,191 @@ void renderChangeCallback(const MString &str, void *clientData)
 	}
 }
 
+void getTransfromData(MFnTransform& transformer)
+{
+  MString dispScale;
+  MString dispTrans;
+  MString dispQuat;
+
+
+  MMatrix mat = transformer.transformation().asMatrix().matrix;
+
+  MString camName = transformer.absoluteName();
+  MGlobal::displayInfo(MString("Name: " + camName));
+  MGlobal::displayInfo(MString("Transformer:") + mat.matrix[0][0] + " " + mat.matrix[0][1] + " " + mat.matrix[0][2] + " " + mat.matrix[0][3]);
+  MGlobal::displayInfo(MString("Transformer:") + mat.matrix[1][0] + " " + mat.matrix[1][1] + " " + mat.matrix[1][2] + " " + mat.matrix[1][3]);
+  MGlobal::displayInfo(MString("Transformer:") + mat.matrix[2][0] + " " + mat.matrix[2][1] + " " + mat.matrix[2][2] + " " + mat.matrix[2][3]);
+  MGlobal::displayInfo(MString("Transformer:") + mat.matrix[3][0] + " " + mat.matrix[3][1] + " " + mat.matrix[3][2] + " " + mat.matrix[3][3]);
+
+  ////Scale
+  //double scale[3] = { 1, 1, 1 };
+  //transformer.getScale(scale);
+
+  //dispScale += "Scale: ";
+  //dispScale += "X: ";
+  //dispScale += scale[0];
+  //dispScale += "Y: ";
+  //dispScale += scale[1];
+  //dispScale += "Z: ";
+  //dispScale += scale[2];
+
+  ////Translation
+  //MVector translation = transformer.getTranslation(MSpace::kObject);
+
+  //dispTrans += "Translation: ";
+  //dispTrans += "X: ";
+  //dispTrans += translation.x;
+  //dispTrans += "Y: ";
+  //dispTrans += translation.y;
+  //dispTrans += "Z: ";
+  //dispTrans += translation.z;
+
+  ////Rotation
+  //MQuaternion quaternion(0, 0, 0, 1);
+  //transformer.getRotation(quaternion);
+  //dispQuat += "Quaternion rotation: ";
+  //dispQuat += "X: ";
+  //dispQuat += quaternion.x;
+  //dispQuat += "Y: ";
+  //dispQuat += quaternion.y;
+  //dispQuat += "Z: ";
+  //dispQuat += quaternion.z;
+  //dispQuat += "W: ";
+  //dispQuat += quaternion.w;
+
+  //MGlobal::displayInfo(dispScale);
+  //MGlobal::displayInfo(dispTrans);
+  //MGlobal::displayInfo(dispQuat);
+
+  //Fetches names of objects that uses this transformer
+  int childCount = transformer.childCount();
+
+  for (int i = 0; i < childCount; ++i)
+  {
+    if (transformer.child(i).apiType() == MFn::kMesh)
+    {
+      MFnMesh mesh = transformer.child(i);
+      MString meshName = mesh.name();
+      MGlobal::displayInfo("Connected Mesh Name: " + meshName);
+    }
+    else if (transformer.child(i).apiType() == MFn::kCamera)
+    {
+    }
+    else if (transformer.child(i).apiType() == MFn::kLight)
+    {
+    }
+  }
+
+}
+
+void outputMeshData(MFnMesh& mesh)
+{
+  MString meshName;
+  MString displayLenght;
+  MString displayCoords;
+
+  meshName = mesh.name();
+  MGlobal::displayInfo(meshName);
+
+  //Verticis
+  MPointArray vts;
+  mesh.getPoints(vts);
+
+  displayLenght = "Number of vertisis: ";
+  displayLenght += vts.length();
+  MGlobal::displayInfo(displayLenght);
+
+  for (int i = 0; i != vts.length(); ++i)
+  {
+    displayCoords += "X: ";
+    displayCoords += vts[i].x;
+    displayCoords += "Y: ";
+    displayCoords += vts[i].y;
+    displayCoords += "Z: ";
+    displayCoords += vts[i].z;
+
+  }
+  MGlobal::displayInfo(displayCoords);
+
+  //Normals
+  MFloatVectorArray nmls;
+
+  mesh.getNormals(nmls);
+
+  displayLenght = "Number of normals: ";
+  displayLenght += nmls.length();
+  MGlobal::displayInfo(displayCoords);
+
+  displayCoords = "";
+  for (int i = 0; i != nmls.length(); ++i)
+  {
+    displayCoords += "X: ";
+    displayCoords += nmls[i].x;
+    displayCoords += "Y: ";
+    displayCoords += nmls[i].x;
+    displayCoords += "Z: ";
+    displayCoords += nmls[i].x;
+
+  }
+  MGlobal::displayInfo(displayCoords);
+
+  //Texture Coordinates
+  bool uv = true;
+  MStringArray uvSets;
+  mesh.getUVSetNames(uvSets);
+
+  if (!uvSets.length() || !mesh.numUVs(uvSets[0]))
+  {
+    MGlobal::displayInfo("no uvs");
+    uv = false;
+  }
+  else
+  {
+    displayLenght = ("lenght of UV coordinates");
+    displayLenght += uvSets.length();
+
+    displayCoords = "";
+    for (int i = 0; i != uvSets.length(); ++i)
+    {
+      //to see the name
+      displayCoords += ("Uv Name: ");
+      displayCoords += uvSets[i];
+
+      MFloatArray UCoords;
+      MFloatArray VCoords;
+
+      mesh.getUVs(UCoords, VCoords, &uvSets[i]);
+
+      displayCoords += "number of UV: ";
+      displayCoords += mesh.numUVs(uvSets[i]);
+
+      for (int j = 0; j != mesh.numUVs(uvSets[i]); ++j)
+      {
+        int numUVs = mesh.numUVs(uvSets[j]);
+        float uC = UCoords[j];
+        float vC = VCoords[j];
+        displayCoords += UCoords[j];
+        displayCoords += " ";
+        displayCoords += VCoords[j];
+        displayCoords += " ";
+      }
+    }
+
+    MGlobal::displayInfo(displayCoords);
+  }
+
+  //Last function used the bool as return value? Perhaps to not load texture if there was no UV coordinates?
+}
+
+void TexturePath(MFnMesh& mesh)
+{
+  MString texturePath;
+  MPlug fullPath = mesh.findPlug("ftn"); //File Texture Name = ftn
+  fullPath.getValue(texturePath);
+
+  MGlobal::displayInfo(texturePath);
+}
+
 void nameChangeCallback(MObject& node, const MString &string, void* clientData)
 {
 	// Fetches the name of the object that has been changed.
@@ -49,14 +234,80 @@ void nameChangeCallback(MObject& node, const MString &string, void* clientData)
 	{
 		MFnMesh mesh(node);
 		MString msg(mesh.name());
-		MGlobal::displayInfo(msg);
+		MGlobal::displayInfo("-> Rename: " + msg);
 	}
 	else if (node.hasFn(MFn::kTransform))
 	{
 		MFnTransform transform(node);
 		MString msg(transform.name());
-		MGlobal::displayInfo(msg);
+		MGlobal::displayInfo("-> Rename: " +  msg);
 	}
+}
+
+void attributeChangedCallback(MNodeMessage::AttributeMessage msg, MPlug &plug, MPlug &otherPlug, void*clientData)
+{
+  MStatus res;
+  MObject obj(plug.node());
+
+  if (msg & MNodeMessage::AttributeMessage::kAttributeSet)
+  {
+    if (obj.apiType() == MFn::kMesh)
+    {
+      MFnMesh mesh(obj);
+      MGlobal::displayInfo("Mesh Attribute Changed");
+      outputMeshData(mesh);
+      TexturePath(mesh);
+    }
+    else if (obj.apiType() == MFn::kTransform)
+    {
+      MFnTransform transformer(obj);
+      MGlobal::displayInfo("Transfrom Attribute Changed");
+      getTransfromData(transformer);
+    }
+
+    ////Test for simplified shaders
+    //if (obj.apiType() == MFn::kBlinn)
+    //{
+    //	MGlobal::displayInfo("Blinn Material");
+    //	MFnBlinnShader ColorValues(obj);
+    //	MGlobal::displayInfo(ColorValues.name());
+    //}
+
+    //plug.node() same as MObject?
+    if (plug.node().hasFn(MFn::kBlinn))
+    {
+      MGlobal::displayInfo("Blinn Material");
+      MGlobal::displayInfo(plug.name());
+      MFnBlinnShader ColorValues = plug.node();
+      MColor color;
+      color = ColorValues.color();
+      MString displayColor;
+      displayColor += color.r;
+      displayColor += " ";
+      displayColor += color.g;
+      displayColor += " ";
+      displayColor += color.b;
+
+      MGlobal::displayInfo(displayColor);
+
+    }
+    else if (plug.node().hasFn(MFn::kLambert))
+    {
+      MGlobal::displayInfo("Lambert Material");
+      MGlobal::displayInfo(plug.name());
+      MFnLambertShader ColorValues = plug.node();
+      MColor color;
+      color = ColorValues.color();
+      MString displayColor;
+
+      displayColor += color.r;
+      displayColor += " ";
+      displayColor += color.g;
+      displayColor += " ";
+      displayColor += color.b;
+
+    }
+  }
 }
 
 void nodeCreationCallback(MObject& node, void* clientData)
@@ -91,247 +342,17 @@ void nodeCreationCallback(MObject& node, void* clientData)
 		}
 	}
 
-}
+    MCallbackId AttributeChangedID = MNodeMessage::addAttributeChangedCallback(
+      node,
+      attributeChangedCallback,
+      NULL,
+      &res);
 
-void getTransfromData(MFnTransform& transformer)
-{
-	MString dispScale;
-	MString dispTrans;
-	MString dispQuat;
+    if (res == MS::kSuccess)
+    {
+      if (myCallbackArray.append(AttributeChangedID) == MS::kSuccess);
+    }
 
-	//Scale
-	double scale[3] = { 1, 1, 1 };
-	transformer.getScale(scale);
-
-	dispScale += "Scale: ";
-	dispScale += "X: ";
-	dispScale += scale[0];
-	dispScale += "Y: ";
-	dispScale += scale[1];
-	dispScale += "Z: ";
-	dispScale += scale[2];
-
-	//Translation
-	MVector translation = transformer.getTranslation(MSpace::kObject);
-
-	dispTrans += "Translation: ";
-	dispTrans += "X: ";
-	dispTrans += translation.x;
-	dispTrans += "Y: ";
-	dispTrans += translation.y;
-	dispTrans += "Z: ";
-	dispTrans += translation.z;
-
-	//Rotation
-	MQuaternion quaternion(0, 0, 0, 1);
-	transformer.getRotation(quaternion);
-	dispQuat += "Quaternion rotation: ";
-	dispQuat += "X: ";
-	dispQuat += quaternion.x;
-	dispQuat += "Y: ";
-	dispQuat += quaternion.y;
-	dispQuat += "Z: ";
-	dispQuat += quaternion.z;
-	dispQuat += "W: ";
-	dispQuat += quaternion.w;
-
-	MGlobal::displayInfo(dispScale);
-	MGlobal::displayInfo(dispTrans);
-	MGlobal::displayInfo(dispQuat);
-
-	//Fetches names of objects that uses this transformer
-	int childCount = transformer.childCount();
-
-	for (int i = 0; i < childCount; ++i)
-	{
-		if (transformer.child(i).apiType() == MFn::kMesh)
-		{
-			MFnMesh mesh = transformer.child(i);
-			MString meshName = mesh.name();
-			MGlobal::displayInfo("Connected Mesh Name: " + meshName);
-		}
-		else if (transformer.child(i).apiType() == MFn::kCamera)
-		{
-		}
-		else if (transformer.child(i).apiType() == MFn::kLight)
-		{
-		}
-	}
-
-}
-
-void outputMeshData(MFnMesh& mesh)
-{
-	MString meshName;
-	MString displayLenght;
-	MString displayCoords;
-	
-	meshName = mesh.name();
-	MGlobal::displayInfo(meshName);
-
-	//Verticis
-	MPointArray vts;
-	mesh.getPoints(vts);
-
-	displayLenght = "Number of vertisis: ";
-	displayLenght += vts.length();
-	MGlobal::displayInfo(displayLenght);
-
-	for (int i = 0; i != vts.length(); ++i)
-	{
-		displayCoords += "X: ";
-		displayCoords += vts[i].x;
-		displayCoords += "Y: ";
-		displayCoords += vts[i].y;
-		displayCoords += "Z: ";
-		displayCoords += vts[i].z;
-
-	}
-	MGlobal::displayInfo(displayCoords);
-
-	//Normals
-	MFloatVectorArray nmls;
-
-	mesh.getNormals(nmls);
-
-	displayLenght = "Number of normals: ";
-	displayLenght += nmls.length();
-	MGlobal::displayInfo(displayCoords);
-
-	displayCoords = "";
-	for (int i = 0; i != nmls.length(); ++i)
-	{
-		displayCoords += "X: ";
-		displayCoords += nmls[i].x;
-		displayCoords += "Y: ";
-		displayCoords += nmls[i].x;
-		displayCoords += "Z: ";
-		displayCoords += nmls[i].x;
-
-	}
-	MGlobal::displayInfo(displayCoords);
-
-	//Texture Coordinates
-	bool uv = true;
-	MStringArray uvSets;
-	mesh.getUVSetNames(uvSets);
-	
-	if (!uvSets.length() || !mesh.numUVs(uvSets[0]))
-	{
-		MGlobal::displayInfo("no uvs");
-		uv = false;
-	}
-	else
-	{
-		displayLenght = ("lenght of UV coordinates");
-		displayLenght += uvSets.length();
-
-		displayCoords = "";
-		for (int i = 0; i != uvSets.length(); ++i)
-		{
-			//to see the name
-			displayCoords += ("Uv Name: ");
-			displayCoords += uvSets[i];
-
-			MFloatArray UCoords;
-			MFloatArray VCoords;
-
-			mesh.getUVs(UCoords, VCoords, &uvSets[i]);
-
-			displayCoords += "number of UV: ";
-			displayCoords += mesh.numUVs(uvSets[i]);
-
-			for (int j = 0; j != mesh.numUVs(uvSets[i]); ++j)
-			{
-				int numUVs = mesh.numUVs(uvSets[j]);
-				float uC = UCoords[j];
-				float vC = VCoords[j];
-				displayCoords += UCoords[j];
-				displayCoords += " ";
-				displayCoords += VCoords[j];
-				displayCoords += " ";
-			}
-		}
-
-		MGlobal::displayInfo(displayCoords);
-	}
-
-	//Last function used the bool as return value? Perhaps to not load texture if there was no UV coordinates?
-}
-
-void TexturePath(MFnMesh& mesh)
-{
-	MString texturePath;
-	MPlug fullPath = mesh.findPlug("ftn"); //File Texture Name = ftn
-	fullPath.getValue(texturePath);
-
-	MGlobal::displayInfo(texturePath);
-}
-
-void attributeChangedCallback(MNodeMessage::AttributeMessage msg, MPlug &plug, MPlug &otherPlug, void*clientData)
-{
-	MStatus res;
-	MObject obj(plug.node());
-
-	if (msg & MNodeMessage::AttributeMessage::kAttributeSet)
-	{
-		if (obj.apiType() == MFn::kMesh)
-		{
-			MFnMesh mesh(obj);
-			MGlobal::displayInfo("Mesh Attribute Changed");
-			outputMeshData(mesh);
-			TexturePath(mesh);
-		}
-		else if (obj.apiType() == MFn::kTransform)
-		{
-			MFnTransform transformer(obj);
-			MGlobal::displayInfo("Transfrom Attribute Changed");
-			getTransfromData(transformer);
-		}
-
-		////Test for simplified shaders
-		//if (obj.apiType() == MFn::kBlinn)
-		//{
-		//	MGlobal::displayInfo("Blinn Material");
-		//	MFnBlinnShader ColorValues(obj);
-		//	MGlobal::displayInfo(ColorValues.name());
-		//}
-		
-		//plug.node() same as MObject?
-		if (plug.node().hasFn(MFn::kBlinn))
-		{
-			MGlobal::displayInfo("Blinn Material");
-			MGlobal::displayInfo(plug.name());
-			MFnBlinnShader ColorValues = plug.node();
-			MColor color;
-			color = ColorValues.color();
-			MString displayColor;
-			displayColor += color.r;
-			displayColor += " ";
-			displayColor += color.g;
-			displayColor += " ";
-			displayColor += color.b;
-
-			MGlobal::displayInfo(displayColor);
-
-		}
-		else if (plug.node().hasFn(MFn::kLambert))
-		{
-			MGlobal::displayInfo("Lambert Material");
-			MGlobal::displayInfo(plug.name());
-			MFnLambertShader ColorValues = plug.node();
-			MColor color;
-			color = ColorValues.color();
-			MString displayColor;
-
-			displayColor += color.r;
-			displayColor += " ";
-			displayColor += color.g;
-			displayColor += " ";
-			displayColor += color.b;
-
-		}
-	}
 }
 
 EXPORT MStatus initializePlugin(MObject obj) 
@@ -359,17 +380,6 @@ EXPORT MStatus initializePlugin(MObject obj)
 		if (myCallbackArray.append(nodeAddedId) == MS::kSuccess);
 	}
 
-	MCallbackId AttributeChangedID = MNodeMessage::addAttributeChangedCallback(
-		obj,
-		attributeChangedCallback,
-		NULL,
-		&res);
-
-	if (res == MS::kSuccess)
-	{
-		if (myCallbackArray.append(AttributeChangedID) == MS::kSuccess);
-	}
-
 	MCallbackId camTranslateId = MUiMessage::add3dViewPostRenderMsgCallback(
 		"modelPanel4",
 		renderChangeCallback,
@@ -377,7 +387,12 @@ EXPORT MStatus initializePlugin(MObject obj)
 		&res
 	);
 
+    if (res == MS::kSuccess)
+    {
+      if (myCallbackArray.append(camTranslateId) == MS::kSuccess);
+    }
 
+    return res;
 }
 
 EXPORT MStatus uninitializePlugin(MObject obj) 
