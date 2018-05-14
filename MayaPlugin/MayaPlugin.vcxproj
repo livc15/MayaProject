@@ -121,9 +121,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ComLib.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ComLib.h" />
     <ClInclude Include="info.h" />
     <ClInclude Include="maya_includes.h" />
   </ItemGroup>

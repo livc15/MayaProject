@@ -365,7 +365,8 @@ EXPORT MStatus initializePlugin(MObject obj)
 		CHECK_MSTATUS(res);
 		return res;
 	}
-	else {
+	else 
+	{
 		MGlobal::displayInfo("Maya plugin loaded!");
 	}
 
